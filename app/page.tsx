@@ -1,13 +1,24 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight, Smartphone, BarChart3, Shield, Check } from 'lucide-react'
-import { useState } from 'react'
+import { ArrowRight, Smartphone, BarChart3, Check } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase'
 
 export default function Home() {
   const [loading, setLoading] = useState(false)
+  const [user, setUser] = useState<any>(null)
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUser(data.user))
+  }, [])
 
   async function handleSubscribe() {
+    if (!user) {
+      window.location.href = '/login?redirect=checkout'
+      return
+    }
+
     setLoading(true)
     try {
       const res = await fetch('/api/checkout', {
@@ -29,21 +40,19 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      {/* Header */}
       <header className="border-b bg-white sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="text-2xl font-bold text-bonavie-600">Bonavis</div>
           <nav className="flex gap-6 items-center">
             <Link href="#comment-ca-marche" className="text-sm hover:text-bonavie-600">Comment ça marche</Link>
             <Link href="#pricing" className="text-sm hover:text-bonavie-600">Tarifs</Link>
-            <Link href="/login" className="bg-bonavie-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-bonavie-700">
-              Espace client
+            <Link href={user ? '/dashboard' : '/login'} className="bg-bonavie-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-bonavie-700">
+              {user ? 'Espace client' : 'Connexion'}
             </Link>
           </nav>
         </div>
       </header>
 
-      {/* Hero */}
       <section className="max-w-6xl mx-auto px-4 py-24 text-center">
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-6">
           Plus de Google Reviews.<br />
@@ -59,7 +68,7 @@ export default function Home() {
             disabled={loading}
             className="bg-bonavie-600 text-white px-8 py-4 rounded-lg font-medium inline-flex items-center gap-2 hover:bg-bonavie-700 disabled:opacity-50 text-lg"
           >
-            {loading ? 'Chargement...' : 'Commencer'} <ArrowRight size={20} />
+            {loading ? 'Chargement...' : 'S’abonner'} <ArrowRight size={20} />
           </button>
           <Link href="#comment-ca-marche" className="border px-8 py-4 rounded-lg font-medium hover:bg-gray-100 text-lg">
             Voir le fonctionnement
@@ -67,7 +76,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How it works */}
       <section id="comment-ca-marche" className="bg-white py-20">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-4">Comment ça marche</h2>
@@ -98,7 +106,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing */}
       <section id="pricing" className="py-20">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Abonnement simple</h2>
