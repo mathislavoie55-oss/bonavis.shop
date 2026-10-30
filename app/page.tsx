@@ -104,7 +104,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold mb-4">Abonnement simple</h2>
           <p className="text-gray-600 mb-10">Gardez vos clients plus longtemps. Les liens restent actifs tant que l’abonnement est payé.</p>
           <div className="bg-white border rounded-2xl p-8 max-w-md mx-auto shadow-sm">
-            <div className="text-5xl font-bold mb-2">29€<span className="text-lg font-normal text-gray-500">/mois</span></div>
+            <div className="text-5xl font-bold mb-2">35$<span className="text-lg font-normal text-gray-500">/mois</span></div>
             <ul className="text-left space-y-3 my-8">
               <li className="flex gap-3"><Check size={18} className="text-bonavie-600 mt-0.5 shrink-0" /> Jusqu’à 5 puces NFC</li>
               <li className="flex gap-3"><Check size={18} className="text-bonavie-600 mt-0.5 shrink-0" /> Statistiques de taps en temps réel</li>

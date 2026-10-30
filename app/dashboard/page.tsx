@@ -112,6 +112,11 @@ export default function DashboardPage() {
       return
     }
 
+    if (links.length >= 5) {
+      alert('Vous avez atteint la limite de 5 liens. Passez à un forfait supérieur pour en créer plus.')
+      return
+    }
+
     const { error } = await supabase.from('links').insert({
       code: code.toLowerCase().replace(/\s+/g, '-'),
       google_review_url: url,
