@@ -6,6 +6,7 @@ export type Link = {
   google_review_url: string
   business_name: string | null
   is_active: boolean
+  user_id?: string
 }
 
 export async function getLinkByCode(code: string): Promise<Link | null> {
