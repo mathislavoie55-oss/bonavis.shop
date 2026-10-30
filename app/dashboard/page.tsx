@@ -14,9 +14,15 @@ type LinkWithStats = {
   tap_count: number
 }
 
+type DailyTap = {
+  date: string
+  count: number
+}
+
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null)
   const [links, setLinks] = useState<LinkWithStats[]>([])
+  const [dailyTaps, setDailyTaps] = useState<DailyTap[]>([])
   const [loading, setLoading] = useState(true)
   const [code, setCode] = useState('')
   const [url, setUrl] = useState('')
@@ -29,15 +35,16 @@ export default function DashboardPage() {
         router.push('/login')
       } else {
         setUser(data.user)
-        loadLinks()
+        loadData(data.user.id)
       }
     })
   }, [router])
 
-  async function loadLinks() {
+  async function loadData(userId: string) {
     const { data: linksData } = await supabase
       .from('links')
       .select('*')
+      .eq('user_id', userId)
       .order('created_at', { ascending: false })
 
     if (!linksData) {
@@ -52,32 +59,58 @@ export default function DashboardPage() {
           .select('*', { count: 'exact', head: true })
           .eq('link_code', link.code)
 
-        return {
-          ...link,
-          tap_count: count || 0,
-        }
+        return { ...link, tap_count: count || 0 }
       })
     )
 
     setLinks(linksWithStats)
+
+    // Stats des 7 derniers jours
+    const sevenDaysAgo = new Date()
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+
+    const { data: tapsData } = await supabase
+      .from('taps')
+      .select('created_at, link_code')
+      .gte('created_at', sevenDaysAgo.toISOString())
+      .in('link_code', linksData.map(l => l.code))
+
+    const daily: Record<string, number> = {}
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date()
+      d.setDate(d.getDate() - i)
+      const key = d.toISOString().split('T')[0]
+      daily[key] = 0
+    }
+
+    tapsData?.forEach(tap => {
+      const day = tap.created_at.split('T')[0]
+      if (daily[day] !== undefined) daily[day]++
+    })
+
+    setDailyTaps(Object.entries(daily).map(([date, count]) => ({ date, count })))
     setLoading(false)
   }
 
   async function createLink(e: React.FormEvent) {
     e.preventDefault()
+    if (!user) return
+
     const { error } = await supabase.from('links').insert({
       code: code.toLowerCase().replace(/\s+/g, '-'),
       google_review_url: url,
       business_name: name || null,
       is_active: true,
+      user_id: user.id,
     })
+
     if (error) {
       alert(error.message)
     } else {
       setCode('')
       setUrl('')
       setName('')
-      loadLinks()
+      loadData(user.id)
     }
   }
 
@@ -86,12 +119,10 @@ export default function DashboardPage() {
     router.push('/')
   }
 
+  const maxTaps = Math.max(...dailyTaps.map(d => d.count), 1)
+
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-500">Chargement...</div>
-      </div>
-    )
+    return <div className="min-h-screen flex items-center justify-center text-gray-500">Chargement...</div>
   }
 
   return (
@@ -101,9 +132,7 @@ export default function DashboardPage() {
           <Link href="/" className="text-2xl font-bold text-bonavie-600">Bonavis</Link>
           <div className="flex items-center gap-6">
             <span className="text-sm text-gray-600">{user?.email}</span>
-            <button onClick={signOut} className="text-sm text-red-600 hover:underline">
-              Déconnexion
-            </button>
+            <button onClick={signOut} className="text-sm text-red-600 hover:underline">Déconnexion</button>
           </div>
         </div>
       </header>
@@ -116,67 +145,54 @@ export default function DashboardPage() {
           </div>
           <div className="text-right">
             <div className="text-2xl font-bold text-bonavie-600">{links.length}</div>
-            <div className="text-sm text-gray-500">Liens actifs</div>
+            <div className="text-sm text-gray-500">Liens</div>
           </div>
         </div>
 
-        {/* Création de lien */}
+        {/* Graphique 7 jours */}
+        <div className="bg-white rounded-2xl p-6 mb-8 shadow-sm">
+          <h2 className="font-semibold mb-4">Taps des 7 derniers jours</h2>
+          <div className="flex items-end gap-2 h-32">
+            {dailyTaps.map((day) => (
+              <div key={day.date} className="flex-1 flex flex-col items-center">
+                <div
+                  className="w-full bg-bonavie-600 rounded-t"
+                  style={{ height: `${(day.count / maxTaps) * 100}%`, minHeight: day.count > 0 ? '4px' : '0' }}
+                />
+                <div className="text-xs text-gray-500 mt-2">
+                  {new Date(day.date).toLocaleDateString('fr-FR', { weekday: 'short' })}
+                </div>
+                <div className="text-xs font-medium">{day.count}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Création */}
         <div className="bg-white rounded-2xl p-6 mb-8 shadow-sm">
           <h2 className="font-semibold text-lg mb-4">Créer un nouveau lien</h2>
           <form onSubmit={createLink} className="grid md:grid-cols-4 gap-4">
-            <input
-              placeholder="Code (ex: cafe123)"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              className="border rounded-lg px-4 py-3"
-              required
-            />
-            <input
-              placeholder="URL Google Review"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              className="border rounded-lg px-4 py-3 md:col-span-2"
-              required
-            />
-            <button
-              type="submit"
-              className="bg-bonavie-600 text-white rounded-lg font-medium hover:bg-bonavie-700"
-            >
-              Créer
-            </button>
-            <input
-              placeholder="Nom de l’entreprise (optionnel)"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="border rounded-lg px-4 py-3 md:col-span-4"
-            />
+            <input placeholder="Code (ex: cafe123)" value={code} onChange={(e) => setCode(e.target.value)} className="border rounded-lg px-4 py-3" required />
+            <input placeholder="URL Google Review" value={url} onChange={(e) => setUrl(e.target.value)} className="border rounded-lg px-4 py-3 md:col-span-2" required />
+            <button type="submit" className="bg-bonavie-600 text-white rounded-lg font-medium hover:bg-bonavie-700">Créer</button>
+            <input placeholder="Nom de l’entreprise (optionnel)" value={name} onChange={(e) => setName(e.target.value)} className="border rounded-lg px-4 py-3 md:col-span-4" />
           </form>
         </div>
 
-        {/* Liste des liens */}
+        {/* Liste */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b">
-            <h2 className="font-semibold">Vos liens</h2>
-          </div>
+          <div className="px-6 py-4 border-b"><h2 className="font-semibold">Vos liens</h2></div>
           <div className="divide-y">
             {links.length === 0 ? (
-              <div className="p-12 text-center text-gray-500">
-                Aucun lien pour le moment. Créez-en un ci-dessus.
-              </div>
+              <div className="p-12 text-center text-gray-500">Aucun lien. Créez-en un ci-dessus.</div>
             ) : (
               links.map((link) => (
                 <div key={link.id} className="px-6 py-5 flex items-center justify-between hover:bg-gray-50">
                   <div>
                     <div className="font-medium">{link.business_name || link.code}</div>
-                    <div className="text-sm text-gray-500 mt-1">
-                      <a
-                        href={`/r/${link.code}`}
-                        target="_blank"
-                        className="text-bonavie-600 hover:underline"
-                      >
-                        bonavis.shop/r/{link.code}
-                      </a>
-                    </div>
+                    <a href={`/r/${link.code}`} target="_blank" className="text-sm text-bonavie-600 hover:underline">
+                      bonavis.shop/r/{link.code}
+                    </a>
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold">{link.tap_count}</div>
