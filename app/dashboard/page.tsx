@@ -24,19 +24,31 @@ export default function DashboardPage() {
   const [links, setLinks] = useState<LinkWithStats[]>([])
   const [dailyTaps, setDailyTaps] = useState<DailyTap[]>([])
   const [loading, setLoading] = useState(true)
+  const [hasActiveSubscription, setHasActiveSubscription] = useState(false)
   const [code, setCode] = useState('')
   const [url, setUrl] = useState('')
   const [name, setName] = useState('')
   const router = useRouter()
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) {
         router.push('/login')
-      } else {
-        setUser(data.user)
-        loadData(data.user.id)
+        return
       }
+      setUser(data.user)
+
+      // Vérifier l'abonnement (simplifié : on considère actif si l'email a un abonnement)
+      // Pour l'instant, on laisse passer en mode test. À renforcer plus tard.
+      const { data: sub } = await supabase
+        .from('subscriptions')
+        .select('status')
+        .eq('user_id', data.user.id)
+        .eq('status', 'active')
+        .maybeSingle()
+
+      setHasActiveSubscription(!!sub)
+      loadData(data.user.id)
     })
   }, [router])
 
@@ -65,7 +77,6 @@ export default function DashboardPage() {
 
     setLinks(linksWithStats)
 
-    // Stats des 7 derniers jours
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
 
@@ -95,6 +106,11 @@ export default function DashboardPage() {
   async function createLink(e: React.FormEvent) {
     e.preventDefault()
     if (!user) return
+
+    if (!hasActiveSubscription) {
+      alert('Vous devez avoir un abonnement actif pour créer des liens.')
+      return
+    }
 
     const { error } = await supabase.from('links').insert({
       code: code.toLowerCase().replace(/\s+/g, '-'),
@@ -138,6 +154,12 @@ export default function DashboardPage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-10">
+        {!hasActiveSubscription && (
+          <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-xl p-4 mb-6">
+            Vous n’avez pas d’abonnement actif. <Link href="/#pricing" className="underline font-medium">S’abonner</Link> pour créer des liens.
+          </div>
+        )}
+
         <div className="flex justify-between items-end mb-8">
           <div>
             <h1 className="text-3xl font-bold">Espace client</h1>
@@ -149,7 +171,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Graphique 7 jours */}
+        {/* Graphique */}
         <div className="bg-white rounded-2xl p-6 mb-8 shadow-sm">
           <h2 className="font-semibold mb-4">Taps des 7 derniers jours</h2>
           <div className="flex items-end gap-2 h-32">
@@ -172,10 +194,12 @@ export default function DashboardPage() {
         <div className="bg-white rounded-2xl p-6 mb-8 shadow-sm">
           <h2 className="font-semibold text-lg mb-4">Créer un nouveau lien</h2>
           <form onSubmit={createLink} className="grid md:grid-cols-4 gap-4">
-            <input placeholder="Code (ex: cafe123)" value={code} onChange={(e) => setCode(e.target.value)} className="border rounded-lg px-4 py-3" required />
-            <input placeholder="URL Google Review" value={url} onChange={(e) => setUrl(e.target.value)} className="border rounded-lg px-4 py-3 md:col-span-2" required />
-            <button type="submit" className="bg-bonavie-600 text-white rounded-lg font-medium hover:bg-bonavie-700">Créer</button>
-            <input placeholder="Nom de l’entreprise (optionnel)" value={name} onChange={(e) => setName(e.target.value)} className="border rounded-lg px-4 py-3 md:col-span-4" />
+            <input placeholder="Code (ex: cafe123)" value={code} onChange={(e) => setCode(e.target.value)} className="border rounded-lg px-4 py-3" required disabled={!hasActiveSubscription} />
+            <input placeholder="URL Google Review" value={url} onChange={(e) => setUrl(e.target.value)} className="border rounded-lg px-4 py-3 md:col-span-2" required disabled={!hasActiveSubscription} />
+            <button type="submit" className="bg-bonavie-600 text-white rounded-lg font-medium hover:bg-bonavie-700 disabled:opacity-50" disabled={!hasActiveSubscription}>
+              Créer
+            </button>
+            <input placeholder="Nom de l’entreprise (optionnel)" value={name} onChange={(e) => setName(e.target.value)} className="border rounded-lg px-4 py-3 md:col-span-4" disabled={!hasActiveSubscription} />
           </form>
         </div>
 
