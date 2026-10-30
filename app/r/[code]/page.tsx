@@ -1,60 +1,31 @@
-import { redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { getLinkByCode, logTap } from '@/lib/store'
-import { headers } from 'next/headers'
 
-export default function RedirectPage({ params }: { params: { code: string } }) {
-  const link = getLinkByCode(params.code)
+export default async function RedirectPage({ params }: { params: { code: string } }) {
+  const { code } = params
+  const link = await getLinkByCode(code)
 
   if (!link) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-2">Lien introuvable</h1>
-          <p className="text-gray-600">Ce code NFC n’existe pas ou a été désactivé.</p>
-        </div>
-      </div>
-    )
+    return notFound()
   }
 
-  if (!link.subscriptionActive) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center max-w-md">
-          <h1 className="text-2xl font-bold mb-2">Service suspendu</h1>
-          <p className="text-gray-600">
-            L’abonnement de <strong>{link.companyName}</strong> n’est plus actif. 
-            Contactez Bonavie pour réactiver les avis Google.
-          </p>
-        </div>
-      </div>
-    )
-  }
+  // Log the tap (fire and forget)
+  logTap(code, 'nfc-tap').catch(() => {})
 
-  // Log the tap
-  const headersList = headers()
-  const userAgent = headersList.get('user-agent') || undefined
-  logTap(params.code, userAgent)
-
-  // In a real app this would be a server-side redirect.
-  // For demo we show a branded intermediate page then redirect.
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
-      <div className="text-center max-w-sm px-6">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center p-8">
         <div className="text-bonavie-600 font-bold text-xl mb-4">Bonavis</div>
-        <h1 className="text-2xl font-semibold mb-2">{link.companyName}</h1>
-        {link.customMessage && (
-          <p className="text-gray-600 mb-6">{link.customMessage}</p>
-        )}
-        <p className="text-sm text-gray-500 mb-8">Redirection vers Google Reviews…</p>
+        <p className="mb-6">Redirection vers Google Review...</p>
         <a
-          href={link.googleReviewUrl}
-          className="inline-block bg-bonavie-600 text-white px-6 py-3 rounded-lg font-medium"
+          href={link.google_review_url}
+          className="bg-bonavie-600 text-white px-6 py-3 rounded-lg inline-block"
         >
-          Laisser un avis
+          Continuer vers Google
         </a>
         <script
           dangerouslySetInnerHTML={{
-            __html: `setTimeout(() => { window.location.href = ${JSON.stringify(link.googleReviewUrl)}; }, 1200);`,
+            __html: `setTimeout(() => { window.location.href = "${link.google_review_url}"; }, 1500);`,
           }}
         />
       </div>

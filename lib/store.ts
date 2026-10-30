@@ -1,54 +1,28 @@
-// Simple in-memory store for demo. In production, replace with PostgreSQL / Supabase.
-export type Link = {
-  code: string
-  companyName: string
-  googleReviewUrl: string
-  customMessage?: string
-  isActive: boolean
-  subscriptionActive: boolean
-}
+import { supabase } from './supabase'
 
-export type Tap = {
+export type Link = {
   id: string
   code: string
-  tappedAt: string
-  userAgent?: string
+  google_review_url: string
+  business_name: string | null
+  is_active: boolean
 }
 
-// Demo data
-export const demoLinks: Link[] = [
-  {
-    code: 'demo123',
-    companyName: 'Restaurant Le Bon Coin',
-    googleReviewUrl: 'https://search.google.com/local/writereview?placeid=ChIJN1t_tDeuEmsRUsoyG83frY4',
-    customMessage: 'Merci de votre visite ! Votre avis nous aide beaucoup.',
-    isActive: true,
-    subscriptionActive: true,
-  },
-  {
-    code: 'expired456',
-    companyName: 'Salon Élégance',
-    googleReviewUrl: 'https://search.google.com/local/writereview?placeid=EXAMPLE',
-    isActive: true,
-    subscriptionActive: false,
-  },
-]
+export async function getLinkByCode(code: string): Promise<Link | null> {
+  const { data, error } = await supabase
+    .from('links')
+    .select('*')
+    .eq('code', code)
+    .eq('is_active', true)
+    .single()
 
-export const taps: Tap[] = []
-
-export function getLinkByCode(code: string): Link | undefined {
-  return demoLinks.find(l => l.code === code)
+  if (error || !data) return null
+  return data as Link
 }
 
-export function logTap(code: string, userAgent?: string) {
-  taps.push({
-    id: Math.random().toString(36).slice(2),
-    code,
-    tappedAt: new Date().toISOString(),
-    userAgent,
+export async function logTap(code: string, userAgent: string) {
+  await supabase.from('taps').insert({
+    link_code: code,
+    user_agent: userAgent,
   })
-}
-
-export function getTapsForCode(code: string): Tap[] {
-  return taps.filter(t => t.code === code)
 }
