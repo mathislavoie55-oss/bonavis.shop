@@ -59,5 +59,3 @@ Puis ouvre http://localhost:3000
 ---
 
 Le code est prêt pour être étendu. Dis-moi ce que tu veux ajouter en priorité.
-Test
-

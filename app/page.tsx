@@ -1,7 +1,33 @@
+'use client'
+
 import Link from 'next/link'
 import { ArrowRight, Smartphone, BarChart3, Shield } from 'lucide-react'
+import { useState } from 'react'
 
 export default function Home() {
+  const [loading, setLoading] = useState(false)
+
+  async function handleSubscribe() {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        alert('Erreur : ' + (data.error || 'Impossible de créer la session'))
+      }
+    } catch (e) {
+      alert('Erreur réseau')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen">
       {/* Header */}
@@ -29,9 +55,13 @@ export default function Home() {
           Vous gardez le contrôle avec un abonnement simple.
         </p>
         <div className="flex gap-4 justify-center">
-          <Link href="/dashboard" className="bg-bonavie-600 text-white px-6 py-3 rounded-lg font-medium inline-flex items-center gap-2 hover:bg-bonavie-700">
-            Commencer <ArrowRight size={18} />
-          </Link>
+          <button
+            onClick={handleSubscribe}
+            disabled={loading}
+            className="bg-bonavie-600 text-white px-6 py-3 rounded-lg font-medium inline-flex items-center gap-2 hover:bg-bonavie-700 disabled:opacity-50"
+          >
+            {loading ? 'Chargement...' : 'Commencer'} <ArrowRight size={18} />
+          </button>
           <Link href="#comment-ca-marche" className="border px-6 py-3 rounded-lg font-medium hover:bg-gray-100">
             Voir le fonctionnement
           </Link>
@@ -81,9 +111,13 @@ export default function Home() {
               <li className="flex gap-2"><Shield size={16} className="text-bonavie-600 mt-0.5" /> Page de redirection personnalisée</li>
               <li className="flex gap-2"><Shield size={16} className="text-bonavie-600 mt-0.5" /> Support et mises à jour</li>
             </ul>
-            <Link href="/dashboard" className="block bg-bonavie-600 text-white py-3 rounded-lg font-medium hover:bg-bonavie-700">
-              Démarrer l’essai
-            </Link>
+            <button
+              onClick={handleSubscribe}
+              disabled={loading}
+              className="block w-full bg-bonavie-600 text-white py-3 rounded-lg font-medium hover:bg-bonavie-700 disabled:opacity-50"
+            >
+              {loading ? 'Chargement...' : 'Démarrer l’essai'}
+            </button>
           </div>
         </div>
       </section>
