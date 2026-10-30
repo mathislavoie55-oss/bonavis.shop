@@ -1,19 +1,17 @@
-import type { Metadata } from 'next'
 import './globals.css'
+import PasswordGate from '@/components/PasswordGate'
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'Bonavis — Plus de Google Reviews facilement',
-  description: 'Système d’abonnement NFC pour collecter des Google Reviews pour votre entreprise.',
+  description: 'Abonnement NFC pour collecter des Google Reviews',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
-      <body>{children}</body>
+      <body>
+        <PasswordGate>{children}</PasswordGate>
+      </body>
     </html>
   )
 }

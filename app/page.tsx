@@ -13,7 +13,7 @@ export default function Home() {
     supabase.auth.getUser().then(({ data }) => setUser(data.user))
   }, [])
 
-  async function handleSubscribe() {
+  async function handleSubscribe(plan: 'starter' | 'standard' | 'pro' = 'standard') {
     if (!user) {
       window.location.href = '/login?redirect=checkout'
       return
@@ -24,6 +24,7 @@ export default function Home() {
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan }),
       })
       const data = await res.json()
       if (data.url) {
@@ -59,72 +60,72 @@ export default function Home() {
           <span className="text-bonavie-600">En un tap.</span>
         </h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-10">
-          Bonavis fournit des puces NFC à vos clients. Ils tapent, arrivent directement sur votre page Google Review. 
-          Vous gardez le contrôle avec un abonnement simple.
+          Bonavis fournit des puces NFC à vos clients. Ils tapent, arrivent directement sur votre page Google Review.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button
-            onClick={handleSubscribe}
-            disabled={loading}
-            className="bg-bonavie-600 text-white px-8 py-4 rounded-lg font-medium inline-flex items-center gap-2 hover:bg-bonavie-700 disabled:opacity-50 text-lg"
-          >
+          <button onClick={() => handleSubscribe('standard')} disabled={loading} className="bg-bonavie-600 text-white px-8 py-4 rounded-lg font-medium inline-flex items-center gap-2 hover:bg-bonavie-700 disabled:opacity-50 text-lg">
             {loading ? 'Chargement...' : 'S’abonner'} <ArrowRight size={20} />
           </button>
-          <Link href="#comment-ca-marche" className="border px-8 py-4 rounded-lg font-medium hover:bg-gray-100 text-lg">
-            Voir le fonctionnement
-          </Link>
+          <Link href="#pricing" className="border px-8 py-4 rounded-lg font-medium hover:bg-gray-100 text-lg">Voir les tarifs</Link>
         </div>
       </section>
 
       <section id="comment-ca-marche" className="bg-white py-20">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-4">Comment ça marche</h2>
-          <p className="text-center text-gray-600 mb-12">Simple pour vous. Simple pour vos clients.</p>
+          <h2 className="text-3xl font-bold text-center mb-12">Comment ça marche</h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center p-6">
-              <div className="w-14 h-14 bg-bonavie-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Smartphone className="text-bonavie-600" size={28} />
-              </div>
-              <h3 className="font-semibold text-lg mb-2">1. Puce NFC</h3>
-              <p className="text-gray-600">Votre client tape la puce sur le téléphone de son client.</p>
+              <Smartphone className="mx-auto text-bonavie-600 mb-4" size={32} />
+              <h3 className="font-semibold mb-2">1. Puce NFC</h3>
+              <p className="text-gray-600 text-sm">Le client tape la puce.</p>
             </div>
             <div className="text-center p-6">
-              <div className="w-14 h-14 bg-bonavie-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <ArrowRight className="text-bonavie-600" size={28} />
-              </div>
-              <h3 className="font-semibold text-lg mb-2">2. Redirection Bonavis</h3>
-              <p className="text-gray-600">La puce ouvre une page Bonavis qui enregistre le tap et redirige.</p>
+              <ArrowRight className="mx-auto text-bonavie-600 mb-4" size={32} />
+              <h3 className="font-semibold mb-2">2. Redirection</h3>
+              <p className="text-gray-600 text-sm">Bonavis enregistre et redirige.</p>
             </div>
             <div className="text-center p-6">
-              <div className="w-14 h-14 bg-bonavie-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <BarChart3 className="text-bonavie-600" size={28} />
-              </div>
-              <h3 className="font-semibold text-lg mb-2">3. Google Review</h3>
-              <p className="text-gray-600">Le client arrive sur votre page d’avis. Vous suivez les statistiques.</p>
+              <BarChart3 className="mx-auto text-bonavie-600 mb-4" size={32} />
+              <h3 className="font-semibold mb-2">3. Google Review</h3>
+              <p className="text-gray-600 text-sm">Le client laisse son avis.</p>
             </div>
           </div>
         </div>
       </section>
 
       <section id="pricing" className="py-20">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Abonnement simple</h2>
-          <p className="text-gray-600 mb-10">Gardez vos clients plus longtemps. Les liens restent actifs tant que l’abonnement est payé.</p>
-          <div className="bg-white border rounded-2xl p-8 max-w-md mx-auto shadow-sm">
-            <div className="text-5xl font-bold mb-2">35$<span className="text-lg font-normal text-gray-500">/mois</span></div>
-            <ul className="text-left space-y-3 my-8">
-              <li className="flex gap-3"><Check size={18} className="text-bonavie-600 mt-0.5 shrink-0" /> Jusqu’à 5 puces NFC</li>
-              <li className="flex gap-3"><Check size={18} className="text-bonavie-600 mt-0.5 shrink-0" /> Statistiques de taps en temps réel</li>
-              <li className="flex gap-3"><Check size={18} className="text-bonavie-600 mt-0.5 shrink-0" /> Page de redirection personnalisée</li>
-              <li className="flex gap-3"><Check size={18} className="text-bonavie-600 mt-0.5 shrink-0" /> Support et mises à jour</li>
-            </ul>
-            <button
-              onClick={handleSubscribe}
-              disabled={loading}
-              className="block w-full bg-bonavie-600 text-white py-4 rounded-lg font-medium hover:bg-bonavie-700 disabled:opacity-50 text-lg"
-            >
-              {loading ? 'Chargement...' : 'S’abonner'}
-            </button>
+        <div className="max-w-5xl mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-4">Abonnements simples</h2>
+          <p className="text-gray-600 mb-10">Choisissez le forfait qui correspond à vos besoins.</p>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-white border rounded-2xl p-6 shadow-sm">
+              <h3 className="font-semibold text-lg mb-2">Starter</h3>
+              <div className="text-4xl font-bold mb-4">10$<span className="text-base font-normal text-gray-500">/mois</span></div>
+              <ul className="text-left space-y-2 text-sm mb-6">
+                <li className="flex gap-2"><Check size={16} className="text-bonavie-600 mt-0.5" /> 1 puce NFC</li>
+                <li className="flex gap-2"><Check size={16} className="text-bonavie-600 mt-0.5" /> Statistiques</li>
+              </ul>
+              <button onClick={() => handleSubscribe('starter')} disabled={loading} className="w-full border border-bonavie-600 text-bonavie-600 py-3 rounded-lg font-medium">Choisir</button>
+            </div>
+            <div className="bg-white border-2 border-bonavie-600 rounded-2xl p-6 shadow-md relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-bonavie-600 text-white text-xs px-3 py-1 rounded-full">Recommandé</div>
+              <h3 className="font-semibold text-lg mb-2">Standard</h3>
+              <div className="text-4xl font-bold mb-4">35$<span className="text-base font-normal text-gray-500">/mois</span></div>
+              <ul className="text-left space-y-2 text-sm mb-6">
+                <li className="flex gap-2"><Check size={16} className="text-bonavie-600 mt-0.5" /> Jusqu’à 5 puces</li>
+                <li className="flex gap-2"><Check size={16} className="text-bonavie-600 mt-0.5" /> Statistiques en temps réel</li>
+              </ul>
+              <button onClick={() => handleSubscribe('standard')} disabled={loading} className="w-full bg-bonavie-600 text-white py-3 rounded-lg font-medium">Choisir</button>
+            </div>
+            <div className="bg-white border rounded-2xl p-6 shadow-sm">
+              <h3 className="font-semibold text-lg mb-2">Pro</h3>
+              <div className="text-4xl font-bold mb-4">50$<span className="text-base font-normal text-gray-500">/mois</span></div>
+              <ul className="text-left space-y-2 text-sm mb-6">
+                <li className="flex gap-2"><Check size={16} className="text-bonavie-600 mt-0.5" /> Jusqu’à 10 puces</li>
+                <li className="flex gap-2"><Check size={16} className="text-bonavie-600 mt-0.5" /> Support prioritaire</li>
+              </ul>
+              <button onClick={() => handleSubscribe('pro')} disabled={loading} className="w-full border border-bonavie-600 text-bonavie-600 py-3 rounded-lg font-medium">Choisir</button>
+            </div>
           </div>
         </div>
       </section>
