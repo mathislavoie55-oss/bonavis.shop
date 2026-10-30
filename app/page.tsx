@@ -116,7 +116,7 @@ export default function Home() {
               disabled={loading}
               className="block w-full bg-bonavie-600 text-white py-4 rounded-lg font-medium hover:bg-bonavie-700 disabled:opacity-50 text-lg"
             >
-              {loading ? 'Chargement...' : 'Démarrer l’essai'}
+              {loading ? 'Chargement...' : 'S’abonner'}
             </button>
           </div>
         </div>
