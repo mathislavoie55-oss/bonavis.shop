@@ -40,7 +40,7 @@ export default function RedirectPage({ params }: { params: { code: string } }) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="text-center max-w-sm px-6">
-        <div className="text-bonavie-600 font-bold text-xl mb-4">Bonavie</div>
+        <div className="text-bonavie-600 font-bold text-xl mb-4">Bonavis</div>
         <h1 className="text-2xl font-semibold mb-2">{link.companyName}</h1>
         {link.customMessage && (
           <p className="text-gray-600 mb-6">{link.customMessage}</p>

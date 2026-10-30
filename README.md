@@ -1,4 +1,4 @@
-# Bonavie — Site + Redirection NFC
+# Bonavis — Site + Redirection NFC
 
 Système d’abonnement pour collecter des Google Reviews via puces NFC.
 

@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Bonavie — Plus de Google Reviews facilement',
+  title: 'Bonavis — Plus de Google Reviews facilement',
   description: 'Système d’abonnement NFC pour collecter des Google Reviews pour votre entreprise.',
 }
 

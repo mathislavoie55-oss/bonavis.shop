@@ -10,7 +10,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-bonavie-600">Bonavie</Link>
+          <Link href="/" className="text-xl font-bold text-bonavie-600">Bonavis</Link>
           <div className="text-sm text-gray-600">Espace client</div>
         </div>
       </header>

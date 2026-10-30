@@ -33,7 +33,7 @@ export default function Home() {
       {/* Header */}
       <header className="border-b bg-white">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="text-2xl font-bold text-bonavie-600">Bonavie</div>
+          <div className="text-2xl font-bold text-bonavie-600">Bonavis</div>
           <nav className="flex gap-6 items-center">
             <Link href="#comment-ca-marche" className="text-sm hover:text-bonavie-600">Comment ça marche</Link>
             <Link href="#pricing" className="text-sm hover:text-bonavie-600">Tarifs</Link>
@@ -51,7 +51,7 @@ export default function Home() {
           <span className="text-bonavie-600">En un tap.</span>
         </h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-10">
-          Bonavie fournit des puces NFC à vos clients. Ils tapent, arrivent sur votre page Google Review. 
+          Bonavis fournit des puces NFC à vos clients. Ils tapent, arrivent sur votre page Google Review. 
           Vous gardez le contrôle avec un abonnement simple.
         </p>
         <div className="flex gap-4 justify-center">
@@ -84,8 +84,8 @@ export default function Home() {
               <div className="w-12 h-12 bg-bonavie-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <ArrowRight className="text-bonavie-600" />
               </div>
-              <h3 className="font-semibold mb-2">2. Redirection Bonavie</h3>
-              <p className="text-gray-600 text-sm">La puce ouvre une URL Bonavie qui enregistre le tap et redirige.</p>
+              <h3 className="font-semibold mb-2">2. Redirection Bonavis</h3>
+              <p className="text-gray-600 text-sm">La puce ouvre une URL Bonavis qui enregistre le tap et redirige.</p>
             </div>
             <div className="text-center p-6">
               <div className="w-12 h-12 bg-bonavie-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -123,7 +123,7 @@ export default function Home() {
       </section>
 
       <footer className="border-t py-8 text-center text-sm text-gray-500">
-        © {new Date().getFullYear()} Bonavie. Tous droits réservés.
+        © {new Date().getFullYear()} Bonavis. Tous droits réservés.
       </footer>
     </div>
   )
