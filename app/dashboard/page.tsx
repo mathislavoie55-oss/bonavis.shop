@@ -39,6 +39,9 @@ export default function DashboardPage() {
       }
       setUser(data.user)
 
+      // Compte admin de test (illimité)
+      const isAdmin = data.user.email === 'mathislavoie55@gmail.com'
+
       const { data: sub } = await supabase
         .from('subscriptions')
         .select('status')
@@ -46,7 +49,7 @@ export default function DashboardPage() {
         .eq('status', 'active')
         .maybeSingle()
 
-      setHasActiveSubscription(!!sub)
+      setHasActiveSubscription(isAdmin || !!sub)
       loadData(data.user.id)
     })
   }, [router])
