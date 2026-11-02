@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { TrendingUp, MousePointerClick, Link2, Calendar } from 'lucide-react'
 
 type LinkWithStats = {
   id: string
@@ -38,8 +39,6 @@ export default function DashboardPage() {
       }
       setUser(data.user)
 
-      // Vérifier l'abonnement (simplifié : on considère actif si l'email a un abonnement)
-      // Pour l'instant, on laisse passer en mode test. À renforcer plus tard.
       const { data: sub } = await supabase
         .from('subscriptions')
         .select('status')
@@ -140,6 +139,7 @@ export default function DashboardPage() {
     router.push('/')
   }
 
+  const totalTaps = links.reduce((sum, l) => sum + l.tap_count, 0)
   const maxTaps = Math.max(...dailyTaps.map(d => d.count), 1)
 
   if (loading) {
@@ -165,25 +165,39 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="flex justify-between items-end mb-8">
-          <div>
-            <h1 className="text-3xl font-bold">Espace client</h1>
-            <p className="text-gray-600 mt-1">Gérez vos puces NFC et suivez les avis.</p>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold">Espace client</h1>
+          <p className="text-gray-600 mt-1">Suivez vos taps et gérez vos puces NFC.</p>
+        </div>
+
+        {/* Stats cards */}
+        <div className="grid md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-white rounded-xl p-5 border">
+            <div className="flex items-center gap-2 text-gray-500 text-sm mb-1"><Link2 size={16} /> Liens</div>
+            <div className="text-3xl font-bold">{links.length}</div>
           </div>
-          <div className="text-right">
-            <div className="text-2xl font-bold text-bonavie-600">{links.length}</div>
-            <div className="text-sm text-gray-500">Liens</div>
+          <div className="bg-white rounded-xl p-5 border">
+            <div className="flex items-center gap-2 text-gray-500 text-sm mb-1"><MousePointerClick size={16} /> Total taps</div>
+            <div className="text-3xl font-bold">{totalTaps}</div>
+          </div>
+          <div className="bg-white rounded-xl p-5 border">
+            <div className="flex items-center gap-2 text-gray-500 text-sm mb-1"><TrendingUp size={16} /> Moyenne / jour</div>
+            <div className="text-3xl font-bold">{dailyTaps.length ? Math.round(totalTaps / 7) : 0}</div>
+          </div>
+          <div className="bg-white rounded-xl p-5 border">
+            <div className="flex items-center gap-2 text-gray-500 text-sm mb-1"><Calendar size={16} /> Cette semaine</div>
+            <div className="text-3xl font-bold">{dailyTaps.reduce((s, d) => s + d.count, 0)}</div>
           </div>
         </div>
 
         {/* Graphique */}
-        <div className="bg-white rounded-2xl p-6 mb-8 shadow-sm">
+        <div className="bg-white rounded-2xl p-6 mb-8 border">
           <h2 className="font-semibold mb-4">Taps des 7 derniers jours</h2>
-          <div className="flex items-end gap-2 h-32">
+          <div className="flex items-end gap-2 h-40">
             {dailyTaps.map((day) => (
               <div key={day.date} className="flex-1 flex flex-col items-center">
                 <div
-                  className="w-full bg-bonavie-600 rounded-t"
+                  className="w-full bg-bonavie-600 rounded-t transition-all"
                   style={{ height: `${(day.count / maxTaps) * 100}%`, minHeight: day.count > 0 ? '4px' : '0' }}
                 />
                 <div className="text-xs text-gray-500 mt-2">
@@ -196,7 +210,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Création */}
-        <div className="bg-white rounded-2xl p-6 mb-8 shadow-sm">
+        <div className="bg-white rounded-2xl p-6 mb-8 border">
           <h2 className="font-semibold text-lg mb-4">Créer un nouveau lien</h2>
           <form onSubmit={createLink} className="grid md:grid-cols-4 gap-4">
             <input placeholder="Code (ex: cafe123)" value={code} onChange={(e) => setCode(e.target.value)} className="border rounded-lg px-4 py-3" required disabled={!hasActiveSubscription} />
@@ -209,7 +223,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Liste */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border overflow-hidden">
           <div className="px-6 py-4 border-b"><h2 className="font-semibold">Vos liens</h2></div>
           <div className="divide-y">
             {links.length === 0 ? (
