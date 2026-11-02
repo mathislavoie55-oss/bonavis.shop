@@ -247,9 +247,17 @@ export default function DashboardPage() {
                       bonavis.shop/r/{link.code}
                     </a>
                   </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold">{link.tap_count}</div>
-                    <div className="text-sm text-gray-500">taps</div>
+                  <div className="text-right flex items-center gap-6">
+                    <div>
+                      <div className="text-2xl font-bold">{link.tap_count}</div>
+                      <div className="text-sm text-gray-500">taps</div>
+                    </div>
+                    <button
+                      onClick={() => deleteLink(link.id)}
+                      className="text-red-500 hover:text-red-700 text-sm"
+                    >
+                      Supprimer
+                    </button>
                   </div>
                 </div>
               ))
