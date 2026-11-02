@@ -15,7 +15,7 @@ export default function Home() {
 
   async function handleSubscribe(plan: 'starter' | 'standard' | 'pro' = 'standard') {
     if (!user) {
-      window.location.href = '/login?redirect=checkout'
+      window.location.href = `/login?redirect=checkout&plan=${plan}`
       return
     }
 
@@ -54,49 +54,54 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="max-w-6xl mx-auto px-4 py-24 text-center">
+      {/* Hero */}
+      <section className="max-w-6xl mx-auto px-4 py-20 text-center">
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-6">
-          Plus de Google Reviews.<br />
-          <span className="text-bonavie-600">En un tap.</span>
+          Plus d’avis Google,<br />
+          <span className="text-bonavie-600">en un seul tap.</span>
         </h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-10">
-          Bonavis fournit des puces NFC à vos clients. Ils tapent, arrivent directement sur votre page Google Review.
+          Posez une puce NFC Bonavis sur votre comptoir : vos clients approchent leur téléphone et arrivent directement sur votre page d’avis Google. Vous suivez les taps dans votre espace client.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button onClick={() => handleSubscribe('standard')} disabled={loading} className="bg-bonavie-600 text-white px-8 py-4 rounded-lg font-medium inline-flex items-center gap-2 hover:bg-bonavie-700 disabled:opacity-50 text-lg">
-            {loading ? 'Chargement...' : 'S’abonner'} <ArrowRight size={20} />
-          </button>
-          <Link href="#pricing" className="border px-8 py-4 rounded-lg font-medium hover:bg-gray-100 text-lg">Voir les tarifs</Link>
+          <Link href="#pricing" className="bg-bonavie-600 text-white px-8 py-4 rounded-lg font-medium inline-flex items-center gap-2 hover:bg-bonavie-700 text-lg">
+            Choisir mon forfait <ArrowRight size={20} />
+          </Link>
+          <Link href="#comment-ca-marche" className="border px-8 py-4 rounded-lg font-medium hover:bg-gray-100 text-lg">
+            Voir comment ça marche
+          </Link>
         </div>
       </section>
 
+      {/* How it works */}
       <section id="comment-ca-marche" className="bg-white py-20">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">Comment ça marche</h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center p-6">
               <Smartphone className="mx-auto text-bonavie-600 mb-4" size={32} />
-              <h3 className="font-semibold mb-2">1. Puce NFC</h3>
-              <p className="text-gray-600 text-sm">Le client tape la puce.</p>
+              <h3 className="font-semibold mb-2">1. Posez la puce</h3>
+              <p className="text-gray-600 text-sm">Collez la puce NFC Bonavis sur votre comptoir ou votre caisse.</p>
             </div>
             <div className="text-center p-6">
               <ArrowRight className="mx-auto text-bonavie-600 mb-4" size={32} />
-              <h3 className="font-semibold mb-2">2. Redirection</h3>
-              <p className="text-gray-600 text-sm">Bonavis enregistre et redirige.</p>
+              <h3 className="font-semibold mb-2">2. Le client tape</h3>
+              <p className="text-gray-600 text-sm">Il approche son téléphone. Aucune application à installer.</p>
             </div>
             <div className="text-center p-6">
               <BarChart3 className="mx-auto text-bonavie-600 mb-4" size={32} />
-              <h3 className="font-semibold mb-2">3. Google Review</h3>
-              <p className="text-gray-600 text-sm">Le client laisse son avis.</p>
+              <h3 className="font-semibold mb-2">3. L’avis est publié</h3>
+              <p className="text-gray-600 text-sm">Il arrive directement sur votre page Google. Vous suivez les taps.</p>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Pricing */}
       <section id="pricing" className="py-20">
         <div className="max-w-5xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Abonnements simples</h2>
-          <p className="text-gray-600 mb-10">Choisissez le forfait qui correspond à vos besoins.</p>
+          <p className="text-gray-600 mb-10">Aucune application à installer. Statistiques de taps incluses. Dès 10 $/mois.</p>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-white border rounded-2xl p-6 shadow-sm">
               <h3 className="font-semibold text-lg mb-2">Starter</h3>
@@ -130,7 +135,23 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Enterprise */}
+      <section className="bg-gray-50 py-16">
+        <div className="max-w-3xl mx-auto px-4 text-center">
+          <h2 className="text-2xl font-bold mb-4">Plusieurs comptoirs ou plusieurs établissements ?</h2>
+          <p className="text-gray-600 mb-6">Une puce par emplacement, des statistiques pour chaque puce, et un prix par puce qui baisse avec le volume.</p>
+          <a href="mailto:contact@bonavis.shop" className="inline-block bg-bonavie-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-bonavie-700">
+            Demander un devis entreprise
+          </a>
+        </div>
+      </section>
+
       <footer className="border-t py-8 text-center text-sm text-gray-500">
+        <div className="flex justify-center gap-6 mb-4">
+          <Link href="/contact" className="hover:underline">Contact</Link>
+          <Link href="/cgv" className="hover:underline">CGV</Link>
+          <Link href="/confidentialite" className="hover:underline">Confidentialité</Link>
+        </div>
         © {new Date().getFullYear()} Bonavis. Tous droits réservés.
       </footer>
     </div>
