@@ -6,9 +6,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 })
 
 const PRICE_IDS = {
-  starter: 'price_STARTER_ID',
-  standard: 'price_1UWH1FD4hy9XVkz0iT4eaXUe',
-  pro: 'price_PRO_ID',
+  starter: 'price_1UWkBODhffsC642tDTGGaoJm',
+  standard: 'price_1UWkCPDhffsC642tUhugqoHR',
+  pro: 'price_1UWkCyDhffsC642tDVaVcv4N',
 }
 
 export async function POST(req: Request) {
@@ -18,16 +18,10 @@ export async function POST(req: Request) {
 
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
-      payment_method_types: ['card'], // Carte + Apple Pay + Google Pay
+      payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
       shipping_address_collection: {
         allowed_countries: ['CA', 'US', 'FR'],
-      },
-      // Désactive Link explicitement
-      payment_method_options: {
-        card: {
-          // Pas de Link
-        },
       },
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.bonavis.shop'}/dashboard?success=true`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.bonavis.shop'}/?canceled=true`,
