@@ -101,7 +101,7 @@ export default function Home() {
       <section id="pricing" className="py-20">
         <div className="max-w-5xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Abonnements simples</h2>
-          <p className="text-gray-600 mb-10">Aucune application à installer. Statistiques de taps incluses. Dès 10 $/mois.</p>
+          <p className="text-gray-600 mb-10">Aucune application à installer. Statistiques de taps incluses. Prix en CAD. Sans engagement.</p>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-white border rounded-2xl p-6 shadow-sm">
               <h3 className="font-semibold text-lg mb-2">Starter</h3>
@@ -130,6 +130,27 @@ export default function Home() {
                 <li className="flex gap-2"><Check size={16} className="text-bonavie-600 mt-0.5" /> Support prioritaire</li>
               </ul>
               <button onClick={() => handleSubscribe('pro')} disabled={loading} className="w-full border border-bonavie-600 text-bonavie-600 py-3 rounded-lg font-medium">Choisir</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust / Différenciation */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-2xl font-bold mb-8">Pourquoi Bonavis ?</h2>
+          <div className="grid md:grid-cols-3 gap-6 text-sm">
+            <div className="bg-white p-6 rounded-xl border">
+              <h3 className="font-semibold mb-2">La puce reste à vous</h3>
+              <p className="text-gray-600">Même si vous résiliez, vos puces continuent de fonctionner. L’abonnement, c’est pour les statistiques et le suivi.</p>
+            </div>
+            <div className="bg-white p-6 rounded-xl border">
+              <h3 className="font-semibold mb-2">100 % conforme Google</h3>
+              <p className="text-gray-600">Aucun filtrage d’avis. Aucune récompense en échange d’un avis. Simple et conforme.</p>
+            </div>
+            <div className="bg-white p-6 rounded-xl border">
+              <h3 className="font-semibold mb-2">Suivi clair</h3>
+              <p className="text-gray-600">Vous voyez exactement combien de taps génèrent des avis. Pas juste une puce, un résultat suivi.</p>
             </div>
           </div>
         </div>
