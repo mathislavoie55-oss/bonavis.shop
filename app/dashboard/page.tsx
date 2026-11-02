@@ -105,6 +105,13 @@ export default function DashboardPage() {
     setLoading(false)
   }
 
+  // Rafraîchir les stats toutes les 10 secondes
+  useEffect(() => {
+    if (!user) return
+    const interval = setInterval(() => loadData(user.id), 10000)
+    return () => clearInterval(interval)
+  }, [user])
+
   async function createLink(e: React.FormEvent) {
     e.preventDefault()
     if (!user) return
